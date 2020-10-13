@@ -18,11 +18,11 @@ public class ControllerGameplay : MonoBehaviour
     private int colums = 8;
     private int rows = 8;
 
-    public ButtonRB bttnPrefab;
+    public ButtonXO bttnPrefab;
 
     private Player whoseTurn = Player.PlayerX;
     private Player[,] boardData; // all the data of who owns what
-    private ButtonRB[,] boardUI; // all the buttons
+    private ButtonXO[,] boardUI; // all the buttons
 
     public Transform panelGameBoard; // grid of buttons
 
@@ -36,14 +36,14 @@ public class ControllerGameplay : MonoBehaviour
     private void buildBoardUI()
     {
 
-        boardUI = new ButtonRB[colums, rows]; // instantiating array for buttons
+        boardUI = new ButtonXO[colums, rows]; // instantiating array for buttons
 
 
         for (int x = 0; x < colums; x++)
         {
             for(int y =0; y < rows; y++)
             {
-                ButtonRB bttn = Instantiate(bttnPrefab, panelGameBoard);
+                ButtonXO bttn = Instantiate(bttnPrefab, panelGameBoard);
                 bttn.Init(new GridPOS(x,y), ()=> { ButtonClicked(bttn); });
                 boardUI[x, y] = bttn;
             }
@@ -53,14 +53,27 @@ public class ControllerGameplay : MonoBehaviour
 
     }
 
-    void ButtonClicked(ButtonRB bttn)
+    void ButtonClicked(ButtonXO bttn)
     {
-        print($"a button was clicked {bttn.pos}");
+        ControllerGameClient.singleton.SendPlayPacket(bttn.pos.X, bttn.pos.Y);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void UpdateFromServer(byte gameStatus, byte whoseTurn, byte[] spaces)
     {
-        
+        //TODO: update all of the interface to reflect game state:
+        // - whose turn
+        // - 64 spaces on board
+        // - status
+
+        for(int i = 0; i < spaces.Length; i++)
+        {
+            byte b = spaces[i];
+
+            int x = i % 3;
+            int y = i / 3;
+
+            boardUI[x, y].SetOwner(b);
+        }
+
     }
 }
