@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using TMPro;
 using UnityEngine;
-
-
+using UnityEngine.UI;
 
 public enum Player
 {
@@ -20,6 +21,10 @@ public class ControllerGameplay : MonoBehaviour
 
     public ButtonXO bttnPrefab;
 
+    public TMP_InputField chatInput;
+    public TextMeshProUGUI chatDisplay;
+    public ScrollRect scrollRect;
+
     private Player whoseTurn = Player.PlayerX;
     private Player[,] boardData; // all the data of who owns what
     private ButtonXO[,] boardUI; // all the buttons
@@ -31,6 +36,7 @@ public class ControllerGameplay : MonoBehaviour
     void Start()
     {
         buildBoardUI();
+        scrollRect.GetComponent<ScrollRect>();
     }
 
     private void buildBoardUI()
@@ -75,5 +81,26 @@ public class ControllerGameplay : MonoBehaviour
             boardUI[x, y].SetOwner(b);
         }
 
+    }
+
+    public void UserDoneEditingMessage()
+    {
+        string txt = chatInput.text;
+
+        if (!new Regex(@"^(\s|\t)*$").IsMatch(txt))
+        {
+            ControllerGameClient.singleton.SendChatPacket(txt);
+            chatInput.text = "";
+        }
+
+
+        chatInput.Select();
+        chatInput.ActivateInputField();
+    }
+
+    public void AddMessageToChatDisplay(string user, string msg)
+    {
+        chatDisplay.text += ($"{user}: {msg}\n");
+        scrollRect.velocity = new Vector2(0f, 500f);
     }
 }

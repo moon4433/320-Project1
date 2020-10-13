@@ -20,10 +20,6 @@ public class ControllerGameClient : MonoBehaviour
     public TMP_InputField inputPort;
     public TMP_InputField inputUsername;
 
-    public TextMeshProUGUI chatDisplay;
-    public TextMeshProUGUI nameDisplay;
-    public TMP_InputField inputDisplay;
-
     public Transform panelHostDetails;
     public Transform panelUsername;
     public ControllerGameplay panelGameplay;
@@ -32,6 +28,7 @@ public class ControllerGameClient : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        panelGameplay.GetComponent<ControllerGameplay>();
         if (singleton)
         {
             // already set...
@@ -164,12 +161,12 @@ public class ControllerGameClient : MonoBehaviour
                 break;
             case "UPDT":
 
-                if (buffer.Length < 15) return; // not enough data for a UPDT packet
+                if (buffer.Length < 70) return; // not enough data for a UPDT packet
                 byte whoseTurn = buffer.ReadUInt8(4);
                 byte gameStatus = buffer.ReadUInt8(5);
 
-                byte[] spaces = new byte[9];
-                for(int i = 0; i < 9; i++)
+                byte[] spaces = new byte[64];
+                for(int i = 0; i < 64; i++)
                 {
                     spaces[i] = buffer.ReadUInt8(6 + 1);
                 }
@@ -183,8 +180,8 @@ public class ControllerGameClient : MonoBehaviour
                 panelGameplay.UpdateFromServer(gameStatus, whoseTurn, spaces);        
 
                 // consume data from buffer
-                buffer.Consume(15);
-
+                buffer.Consume(70);
+                
                 break;
             case "CHAT":
 
@@ -194,18 +191,16 @@ public class ControllerGameClient : MonoBehaviour
                 int fullPacketLength = 7 + usernameLength + messageLength;
 
                 if (buffer.Length < fullPacketLength) return;
-
-                string username = buffer.ReadString(7, usernameLength);
-                string message = buffer.ReadString(7 + usernameLength, messageLength);
-                
+                            
                 // switch to gameplay screen...         
                 panelHostDetails.gameObject.SetActive(false);
                 panelUsername.gameObject.SetActive(false);
                 panelGameplay.gameObject.SetActive(true);
 
-                // TODO: update chat view...
-
-                chatDisplay.text = ($"{username}: {message}");
+                string username = buffer.ReadString(6, usernameLength);
+                string message = buffer.ReadString(6 + usernameLength, messageLength);
+                print(username + ": " + message);
+                panelGameplay.AddMessageToChatDisplay(username, message);
 
                 buffer.Consume(fullPacketLength);
                 break;
@@ -220,34 +215,6 @@ public class ControllerGameClient : MonoBehaviour
         }
     }
 
-    public void UserDoneEditingMessage(string txt)
-    {
-        /*if (new Regex(@"^\\name ", RegexOptions.IgnoreCase).IsMatch(txt))
-        {
-            // user wants to change their name...
-            string name = txt.Substring(6);
-
-            SendPacketToServer(PacketBuilder.BuildName(name));
-            inputDisplay.text = "";
-        }
-        else if (new Regex(@"^\\list\s*$", RegexOptions.IgnoreCase).IsMatch(txt))
-        {
-            // user wants to request list of all users
-
-            SendPacketToServer(Packet.BuildListRequest());
-            inputDisplay.text = "";
-        }
-        else */if (!new Regex(@"^(\s|\t)*$").IsMatch(txt))
-        {
-            SendPacketToServer(PacketBuilder.Chat(txt));
-            inputDisplay.text = "";
-        }
-
-
-        inputDisplay.Select();
-        inputDisplay.ActivateInputField();
-    }
-
     async public void SendPacketToServer(Buffer packet)
     {
         if (!socket.Connected) return; // not connected to the server...
@@ -255,6 +222,11 @@ public class ControllerGameClient : MonoBehaviour
         await socket.GetStream().WriteAsync(packet.bytes, 0, packet.bytes.Length);
 
 
+    }
+
+    public void SendChatPacket(string msg)
+    {
+        SendPacketToServer(PacketBuilder.Chat(msg));
     }
 
     public void SendPlayPacket(int x, int y)

@@ -348,10 +348,10 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2009271285}
-        m_TargetAssemblyTypeName: ControllerGameClient, Assembly-CSharp
+      - m_Target: {fileID: 1318490545}
+        m_TargetAssemblyTypeName: ControllerGameplay, Assembly-CSharp
         m_MethodName: UserDoneEditingMessage
-        m_Mode: 5
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1283,7 +1283,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -3289,6 +3289,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bttnPrefab: {fileID: 4377870635480580529, guid: e61e25b68a8f98549af6e3906212d5be, type: 3}
+  chatInput: {fileID: 60034797}
+  chatDisplay: {fileID: 372928560}
+  scrollRect: {fileID: 1923483467}
   panelGameBoard: {fileID: 1362834468}
 --- !u!1 &1333407001
 GameObject:
@@ -5590,9 +5593,6 @@ MonoBehaviour:
   inputHost: {fileID: 1878117700}
   inputPort: {fileID: 367622447}
   inputUsername: {fileID: 1893859978}
-  chatDisplay: {fileID: 372928560}
-  nameDisplay: {fileID: 972162661}
-  inputDisplay: {fileID: 60034797}
   panelHostDetails: {fileID: 95094204}
   panelUsername: {fileID: 1664285978}
   panelGameplay: {fileID: 1318490545}

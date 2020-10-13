@@ -21,7 +21,6 @@ public static class PacketBuilder
     {
         int packetLength = 5 + message.Length;
         Buffer packet = Buffer.Alloc(packetLength);
-
         packet.WriteString("CHAT");
         packet.WriteUInt8((byte)message.Length, 4);
         packet.WriteString(message, 5);
