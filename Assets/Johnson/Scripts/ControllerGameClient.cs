@@ -123,7 +123,8 @@ public class ControllerGameClient : MonoBehaviour
     {
         if (buffer.Length < 4) return; // not enough data in buffer
 
-        print(buffer);
+        print(buffer.ReadString(0, buffer.Length).ToString());
+        print(buffer.ReadString(0, 4).ToString());
 
         string packetIdentifier = buffer.ReadString(0, 4);
 
@@ -157,19 +158,35 @@ public class ControllerGameClient : MonoBehaviour
                 }
 
                 buffer.Consume(5);
+                
+                break;
+            case "CHAT":
 
+
+                byte usernameLength = buffer.ReadUInt8(4);
+                ushort messageLength = buffer.ReadUInt16BE(5);
+
+                int fullPacketLength = 7 + usernameLength + messageLength;
+               
+                if (buffer.Length < fullPacketLength) return;
+
+                // switch to gameplay screen...         
+                panelHostDetails.gameObject.SetActive(false);
+                panelUsername.gameObject.SetActive(false);
+                panelGameplay.gameObject.SetActive(true);
+
+                string username = buffer.ReadString(7, usernameLength);
+                string message = buffer.ReadString(7 + usernameLength, messageLength);
+
+                print(username + ": " + message);
+
+                panelGameplay.AddMessageToChatDisplay(username, message);
+                
+                buffer.Consume(fullPacketLength);
                 break;
             case "UPDT":
 
                 if (buffer.Length < 70) return; // not enough data for a UPDT packet
-                byte whoseTurn = buffer.ReadUInt8(4);
-                byte gameStatus = buffer.ReadUInt8(5);
-
-                byte[] spaces = new byte[64];
-                for(int i = 0; i < 64; i++)
-                {
-                    spaces[i] = buffer.ReadUInt8(6 + 1);
-                }
 
                 // switch to gameplay screen...
 
@@ -177,32 +194,22 @@ public class ControllerGameClient : MonoBehaviour
                 panelUsername.gameObject.SetActive(false);
                 panelGameplay.gameObject.SetActive(true);
 
+                byte whoseTurn = buffer.ReadUInt8(4);
+                byte gameStatus = buffer.ReadUInt8(5);
+
+                byte[] spaces = new byte[64];
+                for(int i = 0; i < 64; i++)
+                {
+                    spaces[i] = buffer.ReadUInt8(6 + i);
+                }
+
+                
+
                 panelGameplay.UpdateFromServer(gameStatus, whoseTurn, spaces);        
 
                 // consume data from buffer
                 buffer.Consume(70);
                 
-                break;
-            case "CHAT":
-
-                byte usernameLength = buffer.ReadByte(4);
-                ushort messageLength = buffer.ReadUInt16BE(5);
-
-                int fullPacketLength = 7 + usernameLength + messageLength;
-
-                if (buffer.Length < fullPacketLength) return;
-                            
-                // switch to gameplay screen...         
-                panelHostDetails.gameObject.SetActive(false);
-                panelUsername.gameObject.SetActive(false);
-                panelGameplay.gameObject.SetActive(true);
-
-                string username = buffer.ReadString(6, usernameLength);
-                string message = buffer.ReadString(6 + usernameLength, messageLength);
-                print(username + ": " + message);
-                panelGameplay.AddMessageToChatDisplay(username, message);
-
-                buffer.Consume(fullPacketLength);
                 break;
             default:
                 print("unkown packet identifier...");

@@ -24,7 +24,6 @@ public static class PacketBuilder
         packet.WriteString("CHAT");
         packet.WriteUInt8((byte)message.Length, 4);
         packet.WriteString(message, 5);
-
         return packet;
     }
 
