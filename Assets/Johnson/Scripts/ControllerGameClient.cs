@@ -7,6 +7,13 @@ using TMPro;
 using System;
 using System.Text.RegularExpressions;
 
+public enum Panel
+{
+    Host,
+    Username,
+    Gameplay,
+    GameOver
+}
 public class ControllerGameClient : MonoBehaviour
 {
 
@@ -19,6 +26,8 @@ public class ControllerGameClient : MonoBehaviour
     public TMP_InputField inputHost;
     public TMP_InputField inputPort;
     public TMP_InputField inputUsername;
+
+    public TextMeshProUGUI errorTxt;
 
     public Transform panelHostDetails;
     public Transform panelUsername;
@@ -53,6 +62,39 @@ public class ControllerGameClient : MonoBehaviour
         // print(buff);
     }
 
+    public void SwitchToPanel(Panel panel)
+    {
+        switch (panel)
+        {
+            case Panel.Host:
+                panelHostDetails.gameObject.SetActive(true);
+                panelUsername.gameObject.SetActive(false);
+                panelGameplay.gameObject.SetActive(false);
+                //panelGameOver.gameObject.SetActive(false);
+                break;
+            case Panel.Username:
+                panelHostDetails.gameObject.SetActive(false);
+                panelUsername.gameObject.SetActive(true);
+                panelGameplay.gameObject.SetActive(false);
+                //panelGameOver.gameObject.SetActive(false);
+                break;
+            case Panel.Gameplay:
+                panelHostDetails.gameObject.SetActive(false);
+                panelUsername.gameObject.SetActive(false);
+                panelGameplay.gameObject.SetActive(true);
+                //panelGameOver.gameObject.SetActive(false);
+                break;
+            case Panel.GameOver:
+                panelHostDetails.gameObject.SetActive(false);
+                panelUsername.gameObject.SetActive(false);
+                panelGameplay.gameObject.SetActive(false);
+                //panelGameOver.gameObject.SetActive(true);
+                break;
+            default:
+                break;
+        }
+    }
+
     public void OnButtonConnect()
     {
         string host = inputHost.text;
@@ -76,20 +118,19 @@ public class ControllerGameClient : MonoBehaviour
         {
             await socket.ConnectAsync(host, port);
 
-            // switch to ""username" screen
-            panelHostDetails.gameObject.SetActive(false);
-            panelUsername.gameObject.SetActive(true);
-            panelGameplay.gameObject.SetActive(false);
+            // switch to ""username" screenw
+
+            errorTxt.gameObject.SetActive(false);
+            SwitchToPanel(Panel.Username);
 
             StartReceivingPackets();
         }
         catch(Exception e)
         {
             print("FAILED TO CONNECT...");
-            // display message to player...
-            panelHostDetails.gameObject.SetActive(true);
-            panelUsername.gameObject.SetActive(false);
-            panelGameplay.gameObject.SetActive(false);
+            errorTxt.gameObject.SetActive(true);
+            errorTxt.text = "Could not connect to server due to an unkown error";
+            SwitchToPanel(Panel.Host);
         }
     }
 
@@ -124,7 +165,7 @@ public class ControllerGameClient : MonoBehaviour
         if (buffer.Length < 4) return; // not enough data in buffer
 
         print(buffer.ReadString(0, buffer.Length).ToString());
-        print(buffer.ReadString(0, 4).ToString());
+        //print(buffer.ReadString(0, 4).ToString());
 
         string packetIdentifier = buffer.ReadString(0, 4);
 
@@ -135,25 +176,53 @@ public class ControllerGameClient : MonoBehaviour
 
                 if (joinResponse == 1 || joinResponse == 2 || joinResponse == 3)
                 {
-                    panelHostDetails.gameObject.SetActive(false);
-                    panelUsername.gameObject.SetActive(false);
-                    panelGameplay.gameObject.SetActive(true);
+                    errorTxt.gameObject.SetActive(false);
+                    SwitchToPanel(Panel.Gameplay);
+                }
+                else if (joinResponse == 4)
+                {
+                    errorTxt.text = "Username too short";
+                    errorTxt.gameObject.SetActive(true);
+                    SwitchToPanel(Panel.Username);
+                }
+                else if (joinResponse == 5)
+                {
+                    errorTxt.text = "Username too long";
+                    errorTxt.gameObject.SetActive(true);
+                    SwitchToPanel(Panel.Username);
+                }
+                else if (joinResponse == 6)
+                {
+                    errorTxt.text = "Username cannot contain special characters";
+                    errorTxt.gameObject.SetActive(true);
+                    SwitchToPanel(Panel.Username);
+                }
+                else if (joinResponse == 7)
+                {
+                    errorTxt.text = "Username already in use";
+                    errorTxt.gameObject.SetActive(true);
+                    SwitchToPanel(Panel.Username);
+                }
+                else if (joinResponse == 8)
+                {
+                    errorTxt.text = "Username contains profanity";
+                    errorTxt.gameObject.SetActive(true);
+                    SwitchToPanel(Panel.Username);
                 }
                 else if(joinResponse == 9)
                 { // server full, send to first screen
-                    panelHostDetails.gameObject.SetActive(true);
-                    panelUsername.gameObject.SetActive(false);
-                    panelGameplay.gameObject.SetActive(false);
+                    errorTxt.gameObject.SetActive(true);
+                    SwitchToPanel(Panel.Host);
                 }
                 else
                 {
                     // username denied!
 
-                    panelHostDetails.gameObject.SetActive(false);
-                    panelUsername.gameObject.SetActive(true);
-                    panelGameplay.gameObject.SetActive(false);
+                    SwitchToPanel(Panel.Host);
                     inputUsername.text = "";
                     // TODO: show error message to user
+                    errorTxt.gameObject.SetActive(true);
+                    errorTxt.text = "Could not connect to server due to an unkown error";
                     print(joinResponse);
                 }
 
@@ -171,9 +240,7 @@ public class ControllerGameClient : MonoBehaviour
                 if (buffer.Length < fullPacketLength) return;
 
                 // switch to gameplay screen...         
-                panelHostDetails.gameObject.SetActive(false);
-                panelUsername.gameObject.SetActive(false);
-                panelGameplay.gameObject.SetActive(true);
+                SwitchToPanel(Panel.Gameplay);
 
                 string username = buffer.ReadString(7, usernameLength);
                 string message = buffer.ReadString(7 + usernameLength, messageLength);
@@ -190,12 +257,22 @@ public class ControllerGameClient : MonoBehaviour
 
                 // switch to gameplay screen...
 
-                panelHostDetails.gameObject.SetActive(false);
-                panelUsername.gameObject.SetActive(false);
-                panelGameplay.gameObject.SetActive(true);
+                SwitchToPanel(Panel.Gameplay);
 
                 byte whoseTurn = buffer.ReadUInt8(4);
                 byte gameStatus = buffer.ReadUInt8(5);
+                if(gameStatus != 0)
+                {
+                    switch (gameStatus)
+                    {
+                        case 1:
+                            break;
+                        case 2:
+                            break;
+                        default:
+                            break;
+                    }
+                }
 
                 byte[] spaces = new byte[64];
                 for(int i = 0; i < 64; i++)

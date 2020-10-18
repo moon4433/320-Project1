@@ -25,13 +25,18 @@ public class ButtonXO : MonoBehaviour
 {
 
     public GridPOS pos;
-    public Image image;
+    public Sprite emptySpace;
+    public Sprite blackSpace;
+    public Sprite redSpace;
 
+    private Button bttn;
+    public Image image;
+    
     public void Init(GridPOS pos, UnityAction callback)
     {
         this.pos = pos;
 
-        Button bttn = GetComponent<Button>();
+        bttn = GetComponent<Button>();
 
         bttn.onClick.AddListener( callback );
     }
@@ -39,8 +44,8 @@ public class ButtonXO : MonoBehaviour
     public void SetOwner(byte b)
     {
 
-        if (b == 0) Destroy(image.gameObject);
-        if (b == 1) image.color = UnityEngine.Color.red;
-        if (b == 2) image.color = UnityEngine.Color.black;
+        if (b == 0) image.sprite = emptySpace;
+        if (b == 1) image.sprite = blackSpace;
+        if (b == 2) image.sprite = redSpace;
     }
 }

@@ -28,15 +28,15 @@ exports.Server = {
 
 			const client = new Client(socket, this);
 			this.clients.push(client);
-
+			
 		}
 		
 	},
 	onClientDisconnect(client){
 
 		// players free up their "seats":
-		if (this.game.clientX == client) this.game.clientX = null;
-		if (this.game.clientY == client) this.game.clientY = null;
+		if (this.game.clientBlack == client) this.game.clientBlack = null;
+		if (this.game.clientRed == client) this.game.clientRed = null;
 
 		// TODO: select a spectator to take leaving user's seat?
 
@@ -76,16 +76,16 @@ exports.Server = {
 
 				//finish with response ids: 1/2/3
 
-				if(this.game.clientX == client) return 1; // you are already client B
-				if(this.game.clientO == client) return 2; // you are already client R
+				if(this.game.clientBlack == client) return 1; // you are already client B
+				if(this.game.clientRed == client) return 2; // you are already client R
 
-				if(!this.game.clientX) {
-					this.game.clientX = client;
+				if(!this.game.clientBlack) {
+					this.game.clientBlack = client;
 					return 1; // you are now client B
 				}
 
-				if(!this.game.clientO) {
-					this.game.clientO = client;
+				if(!this.game.clientRed) {
+					this.game.clientRed = client;
 					return 2; // you are now client R
 				}
 

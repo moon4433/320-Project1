@@ -54,11 +54,11 @@ exports.Client = class Client {
 				console.log("user wants to change name: "+desiredUsername+" ");
 
 				// build and send packet
-				const packet = PacketBuilder.join(responseType);
-				this.sendPacket(packet);
-
-				//const packet2 = PacketBuilder.update(this.server.game);
+				//const packet = PacketBuilder.join(responseType);
 				//this.sendPacket(packet);
+
+				const packet2 = PacketBuilder.update(this.server.game);
+				this.sendPacket(packet2);
  
 				break;
 			case "CHAT": 

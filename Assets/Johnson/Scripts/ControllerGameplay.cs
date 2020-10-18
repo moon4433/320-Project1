@@ -9,8 +9,8 @@ using UnityEngine.UI;
 public enum Player
 {
     Nobody,
-    PlayerX,
-    PlayerO
+    PlayerBlack,
+    PlayerRed
 }
 
 public class ControllerGameplay : MonoBehaviour
@@ -25,7 +25,7 @@ public class ControllerGameplay : MonoBehaviour
     public TextMeshProUGUI chatDisplay;
     public ScrollRect scrollRect;
 
-    private Player whoseTurn = Player.PlayerX;
+    private Player whoseTurn = Player.PlayerBlack;
     private Player[,] boardData; // all the data of who owns what
     private ButtonXO[,] boardUI; // all the buttons
 
@@ -75,8 +75,8 @@ public class ControllerGameplay : MonoBehaviour
         {
             byte b = spaces[i];
 
-            int x = i % 3;
-            int y = i / 3;
+            int x = i % 8;
+            int y = i / 8;
 
             boardUI[x, y].SetOwner(b);
         }
