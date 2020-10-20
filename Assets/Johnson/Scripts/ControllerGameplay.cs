@@ -24,7 +24,8 @@ public class ControllerGameplay : MonoBehaviour
     
 
     public ButtonXO bttnPrefab;
-    //public Button button;
+    [HideInInspector]
+    public ButtonXO previousBttn;
 
     public Sprite emptySpace;
     public Sprite blackSpace;
@@ -43,6 +44,8 @@ public class ControllerGameplay : MonoBehaviour
     public Transform panelGameBoard; // grid of buttons
 
     public ControllerGameClient client;
+    [HideInInspector]
+    public bool hasButtonBeenPicked;
 
 
     // Start is called before the first frame update
@@ -93,7 +96,7 @@ public class ControllerGameplay : MonoBehaviour
         ButtonXO bottomMiddleTB = boardUI[bttn.pos.X + 1, bttn.pos.Y];
         ButtonXO bottomRightTB = boardUI[bttn.pos.X + 1, bttn.pos.Y + 1];
 
-        bool isButtonPicked = false;
+        hasButtonBeenPicked = false;
                 
         if (client.playerTurn == 1)
         {
@@ -108,77 +111,78 @@ public class ControllerGameplay : MonoBehaviour
 
                 selectedButton = bttn;
                 hasButtonBeenPicked = true;
+                previousBttn = bttn;
             }
             else if(CheckForPlayerPuck(bttn) != client.playerTurn && hasButtonBeenPicked == false) // invalid
             {
-                AddMessageToChatDisplay(console, "Please pick one of your pieces.");
+                AddMessageToChatDisplay(console, "Please pick one of your pieces. ");
             }
 
             if (hasButtonBeenPicked) // valid
             {
                 if (bttn.isKingged == false)
                 {
-                    if (bttn == boardUI[selectedButton.pos.X - 1, selectedButton.pos.Y])  // invalid
+                    if (previousBttn == boardUI[selectedButton.pos.X + 1, selectedButton.pos.Y])  // invalid
                     {
-                        AddMessageToChatDisplay(console, "Please pick a valid space.");
+                        AddMessageToChatDisplay(console, "Please pick a valid space. 1");
                         hasButtonBeenPicked = false;
                     }
-                    if (bttn == boardUI[selectedButton.pos.X, selectedButton.pos.Y - 1]) // invalid
+                    if (previousBttn == boardUI[selectedButton.pos.X, selectedButton.pos.Y + 1]) // invalid
                     {
-                        AddMessageToChatDisplay(console, "Please pick a valid space.");
+                        AddMessageToChatDisplay(console, "Please pick a valid space. 2");
                         hasButtonBeenPicked = false;
                     }
-                    if (bttn == boardUI[selectedButton.pos.X, selectedButton.pos.Y + 1]) // invalid
+                    if (previousBttn == boardUI[selectedButton.pos.X, selectedButton.pos.Y - 1]) // invalid
                     {
-                        AddMessageToChatDisplay(console, "Please pick a valid space.");
+                        AddMessageToChatDisplay(console, "Please pick a valid space. 3");
                         hasButtonBeenPicked = false;
                     }
-                    if (bttn == boardUI[selectedButton.pos.X + 1, selectedButton.pos.Y - 1]) // invalid
+                    if (previousBttn == boardUI[selectedButton.pos.X - 1, selectedButton.pos.Y + 1]) // invalid
                     {
-                        AddMessageToChatDisplay(console, "Please pick a valid space.");
+                        AddMessageToChatDisplay(console, "Please pick a valid space. 4");
                         hasButtonBeenPicked = false;
                     }
-                    if (bttn == boardUI[selectedButton.pos.X + 1, selectedButton.pos.Y]) // invalid
+                    if (previousBttn == boardUI[selectedButton.pos.X - 1, selectedButton.pos.Y]) // invalid
                     {
-                        AddMessageToChatDisplay(console, "Please pick a valid space.");
+                        AddMessageToChatDisplay(console, "Please pick a valid space. 5");
                         hasButtonBeenPicked = false;
                     }
-                    if (bttn == boardUI[selectedButton.pos.X + 1, selectedButton.pos.Y + 1]) // invalid
+                    if (previousBttn == boardUI[selectedButton.pos.X - 1, selectedButton.pos.Y - 1]) // invalid
                     {
-                        AddMessageToChatDisplay(console, "Please pick a valid space.");
+                        AddMessageToChatDisplay(console, "Please pick a valid space. 6");
                         hasButtonBeenPicked = false;
                     }
 
-                    if (topRightTB == redSpace)
+                    if (previousBttn == boardUI[bttn.pos.X + 1, bttn.pos.Y - 1] && bttn == redSpace)
                     {
                         if(bttn == boardUI[selectedButton.pos.X - 2, selectedButton.pos.Y + 2])
                         {
-                            AddMessageToChatDisplay(console, "valid");
+                            AddMessageToChatDisplay(console, "valid 1");
                             hasButtonBeenPicked = false;
                         }
                     }
-                    if (topLeftTB == redSpace)
+                    if (previousBttn == boardUI[bttn.pos.X + 1, bttn.pos.Y + 1] && bttn == redSpace)
                     {
                         if (bttn == boardUI[selectedButton.pos.X - 2, selectedButton.pos.Y - 2])
                         {
-                            AddMessageToChatDisplay(console, "valid");
+                            AddMessageToChatDisplay(console, "valid 2");
                             hasButtonBeenPicked = false;
                         }
                     }
 
-                    if (boardUI[selectedButton.pos.X - 1, selectedButton.pos.Y + 1] == emptySpace)
+                    if (previousBttn == boardUI[bttn.pos.X + 1, bttn.pos.Y - 1] && bttn == emptySpace)
                     {
                         if (bttn == boardUI[selectedButton.pos.X - 1, selectedButton.pos.Y + 1])
                         {
-                            AddMessageToChatDisplay(console, "valid");
+                            AddMessageToChatDisplay(console, "valid 3");
                             hasButtonBeenPicked = false;
                         }
                     }
-                    if (boardUI[selectedButton.pos.X - 1, selectedButton.pos.Y - 1] == emptySpace)
+                    if (previousBttn == boardUI[bttn.pos.X + 1, bttn.pos.Y + 1] && bttn == emptySpace)
                     {
                         if (bttn == boardUI[selectedButton.pos.X - 1, selectedButton.pos.Y - 1])
                         {
-                            AddMessageToChatDisplay(console, "valid");
+                            AddMessageToChatDisplay(console, "valid 4");
                             hasButtonBeenPicked = false;
                         }
                     }
@@ -238,23 +242,6 @@ public class ControllerGameplay : MonoBehaviour
 
         }
               
-    }
-
-    public bool HasButtonBeenPressed(bool pb)
-    {
-        bool pressedBttn = pb;
-
-        if (pressedBttn)
-        {
-            return pb;
-        }
-
-        return pb;
-    }
-
-    public bool IsButtonKingged(bool pb)
-    {
-
     }
 
 
