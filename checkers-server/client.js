@@ -46,7 +46,10 @@ exports.Client = class Client {
 				
 				// check username...
 				let responseType = this.server.generateResponseID(desiredUsername, this);
+				if(responseType == 1 || responseType == 2 || responseType == 3){
 				this.username = desiredUsername;
+				}
+
 
 				// consume data out of the buffer:
 				this.buffer = this.buffer.slice(5 + lengthOfUsername);
@@ -54,11 +57,8 @@ exports.Client = class Client {
 				console.log("user wants to change name: "+desiredUsername+" ");
 
 				// build and send packet
-				//const packet = PacketBuilder.join(responseType);
-				//this.sendPacket(packet);
-
-				const packet2 = PacketBuilder.update(this.server.game);
-				this.sendPacket(packet2);
+				const packet = PacketBuilder.join(responseType, this.server.game);
+				this.sendPacket(packet);
  
 				break;
 			case "CHAT": 

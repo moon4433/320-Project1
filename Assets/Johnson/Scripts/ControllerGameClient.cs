@@ -83,6 +83,7 @@ public class ControllerGameClient : MonoBehaviour
                 panelUsername.gameObject.SetActive(false);
                 panelGameplay.gameObject.SetActive(true);
                 //panelGameOver.gameObject.SetActive(false);
+                
                 break;
             case Panel.GameOver:
                 panelHostDetails.gameObject.SetActive(false);
@@ -108,6 +109,7 @@ public class ControllerGameClient : MonoBehaviour
         string user = inputUsername.text;
         Buffer packet = PacketBuilder.Join(inputUsername.text);
         SendPacketToServer(packet);
+        
     }
 
     async public void TryToConnect(string host, int port)
@@ -171,12 +173,19 @@ public class ControllerGameClient : MonoBehaviour
 
         switch(packetIdentifier){
             case "JOIN":
-                if (buffer.Length < 5) return; // not enough data for a JOIN packet
+                if (buffer.Length < 69) return; // not enough data for a JOIN packet
                 byte joinResponse = buffer.ReadUInt8(4);
+
+                byte[] currentSpaces = new byte[64];
+                for (int i = 0; i < 64; i++)
+                {
+                    currentSpaces[i] = buffer.ReadUInt8(5 + i);
+                }
 
                 if (joinResponse == 1 || joinResponse == 2 || joinResponse == 3)
                 {
                     errorTxt.gameObject.SetActive(false);
+
                     SwitchToPanel(Panel.Gameplay);
                 }
                 else if (joinResponse == 4)
@@ -226,7 +235,9 @@ public class ControllerGameClient : MonoBehaviour
                     print(joinResponse);
                 }
 
-                buffer.Consume(5);
+                panelGameplay.SetTheBoard(currentSpaces);
+
+                buffer.Consume(69);
                 
                 break;
             case "CHAT":
@@ -261,7 +272,7 @@ public class ControllerGameClient : MonoBehaviour
 
                 byte whoseTurn = buffer.ReadUInt8(4);
                 byte gameStatus = buffer.ReadUInt8(5);
-                if(gameStatus != 0)
+                /*if(gameStatus != 0)
                 {
                     switch (gameStatus)
                     {
@@ -272,7 +283,7 @@ public class ControllerGameClient : MonoBehaviour
                         default:
                             break;
                     }
-                }
+                }*/
 
                 byte[] spaces = new byte[64];
                 for(int i = 0; i < 64; i++)
@@ -312,7 +323,6 @@ public class ControllerGameClient : MonoBehaviour
     {
         SendPacketToServer(PacketBuilder.Chat(msg));
     }
-
     public void SendPlayPacket(int x, int y)
     {
         SendPacketToServer( PacketBuilder.Play(x, y) );

@@ -35,6 +35,14 @@ JOIN (response) - When the server recieves a JOIN packet, it must decide whether
 	8: username not allowed (profane?)
 	9: game is full
 
+LIST - Sends a list of all users currently connected
+
+	O 	L 	DataType 	Desc
+	------------------------------------------
+	0 	4 	ascii 		packet type: "LIST"
+	4 	? 	ascii 		list of all users
+	
+
 UPDT - the state of the game
 	
 	O 	L 	DataType 	Desc
@@ -79,6 +87,12 @@ CHAT - The player wants to chat.
 	0 	4 	ascii 	packet type: "CHAT"
 	4 	2 	uint8 	length of message
 	6 	? 	ascii 	message for the chat (65535 max)
+
+LIST - request for an updated list of users
+
+	O 	L 	DataType 	Desc
+	------------------------------------------
+	0 	4 	ascii 		packet type: "LIST"
 
 PLAY - this packet should be submitted when the player takes their turn.
 

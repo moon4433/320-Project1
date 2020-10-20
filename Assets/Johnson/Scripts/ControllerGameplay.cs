@@ -31,6 +31,8 @@ public class ControllerGameplay : MonoBehaviour
 
     public Transform panelGameBoard; // grid of buttons
 
+    public ControllerGameClient client;
+
 
     // Start is called before the first frame update
     void Start()
@@ -54,14 +56,21 @@ public class ControllerGameplay : MonoBehaviour
                 boardUI[x, y] = bttn;
             }
         }
-        
-
 
     }
 
     void ButtonClicked(ButtonXO bttn)
     {
-        ControllerGameClient.singleton.SendPlayPacket(bttn.pos.X, bttn.pos.Y);
+        //ControllerGameClient.singleton.SendPlayPacket(bttn.pos.X, bttn.pos.Y);
+        // TODO: 1. check if spot has has puck
+        //       2. if it does, does it match current player
+        //       3. if it does, then select it
+        //       4. is it king'ed
+        //       5. if not, then move forward diagonal 1| if yes, move forward or backward diagonal 1
+        //       6. is it next to someone
+        //       7. if not, choose an area to move | if yes, player must jump opponents puck (if this applies to more than one player can decide which to jump)
+
+
     }
 
     public void UpdateFromServer(byte gameStatus, byte whoseTurn, byte[] spaces)
@@ -72,6 +81,25 @@ public class ControllerGameplay : MonoBehaviour
         // - status
 
         for(int i = 0; i < spaces.Length; i++)
+        {
+            byte b = spaces[i];
+
+            int x = i % 8;
+            int y = i / 8;
+
+            boardUI[x, y].SetOwner(b);
+        }
+
+    }
+
+    public void SetTheBoard(byte[] spaces)
+    {
+        //TODO: update all of the interface to reflect game state:
+        // - whose turn
+        // - 64 spaces on board
+        // - status
+
+        for (int i = 0; i < spaces.Length; i++)
         {
             byte b = spaces[i];
 
@@ -102,5 +130,10 @@ public class ControllerGameplay : MonoBehaviour
     {
         chatDisplay.text += ($"{user}: {msg}\n");
         scrollRect.velocity = new Vector2(0f, 500f);
+    }
+
+    public void AddMessageToUserDisplay(string users)
+    {
+        chatDisplay.text += ($"{users}\n");
     }
 }

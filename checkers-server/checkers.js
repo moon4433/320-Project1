@@ -36,7 +36,7 @@ const Game = {
 		if(y >= this.board.length) return; // ignore MOVEs off the boards
 		if(x >= this.board[y].length) return; // ignore MOVEs off the boards
 
-		if(this.board[y][x] > 0) return; // ignore MOVEs on taken spaces
+		//if(this.board[y][x] > 0) return; // ignore MOVEs on taken spaces
 
 		//this.board[y][x] = this.whoseTurn; // sets board state
 

@@ -28,9 +28,11 @@ exports.Server = {
 
 			const client = new Client(socket, this);
 			this.clients.push(client);
-			
+
 		}
-		
+
+
+
 	},
 	onClientDisconnect(client){
 
@@ -42,6 +44,8 @@ exports.Server = {
 
 		const index = this.clients.indexOf(client); // find the object in the array
 		if(index >= 0) this.clients.splice(index, 1); // remove the object from the array
+
+
 	},
 	onError(e){
 		console.log("Error with listener: " + e);
@@ -97,4 +101,5 @@ exports.Server = {
 			c.sendPacket(packet);			
 		});
 	},
+
 };
