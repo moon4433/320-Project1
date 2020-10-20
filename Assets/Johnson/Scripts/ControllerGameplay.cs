@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
@@ -19,7 +20,15 @@ public class ControllerGameplay : MonoBehaviour
     private int colums = 8;
     private int rows = 8;
 
+    string console = "Console";
+    
+
     public ButtonXO bttnPrefab;
+    //public Button button;
+
+    public Sprite emptySpace;
+    public Sprite blackSpace;
+    public Sprite redSpace;
 
     public TMP_InputField chatInput;
     public TextMeshProUGUI chatDisplay;
@@ -28,6 +37,8 @@ public class ControllerGameplay : MonoBehaviour
     private Player whoseTurn = Player.PlayerBlack;
     private Player[,] boardData; // all the data of who owns what
     private ButtonXO[,] boardUI; // all the buttons
+    private ButtonXO selectedButton;
+
 
     public Transform panelGameBoard; // grid of buttons
 
@@ -59,18 +70,242 @@ public class ControllerGameplay : MonoBehaviour
 
     }
 
+
+
     void ButtonClicked(ButtonXO bttn)
     {
+
+
         //ControllerGameClient.singleton.SendPlayPacket(bttn.pos.X, bttn.pos.Y);
-        // TODO: 1. check if spot has has puck
-        //       2. if it does, does it match current player
-        //       3. if it does, then select it
-        //       4. is it king'ed
-        //       5. if not, then move forward diagonal 1| if yes, move forward or backward diagonal 1
-        //       6. is it next to someone
-        //       7. if not, choose an area to move | if yes, player must jump opponents puck (if this applies to more than one player can decide which to jump)
+
+        if (bttn.pos.X < 0 && bttn.pos.Y < 0) return;
+        if (bttn.pos.X > 8 && bttn.pos.Y > 8) return;
+
+        ButtonXO topLeftTB = boardUI[bttn.pos.X - 1, bttn.pos.Y - 1];
+        ButtonXO topMiddleTB = boardUI[bttn.pos.X - 1, bttn.pos.Y];
+        ButtonXO topRightTB = boardUI[bttn.pos.X - 1, bttn.pos.Y + 1];
+
+        ButtonXO leftTB = boardUI[bttn.pos.X, bttn.pos.Y - 1];
+        ButtonXO middleTB = boardUI[bttn.pos.X, bttn.pos.Y];
+        ButtonXO rightTB = boardUI[bttn.pos.X, bttn.pos.Y + 1];
+
+        ButtonXO bottomLeftTB = boardUI[bttn.pos.X + 1, bttn.pos.Y - 1];
+        ButtonXO bottomMiddleTB = boardUI[bttn.pos.X + 1, bttn.pos.Y];
+        ButtonXO bottomRightTB = boardUI[bttn.pos.X + 1, bttn.pos.Y + 1];
+
+        bool isButtonPicked = false;
+                
+        if (client.playerTurn == 1)
+        {
+            if (CheckForPlayerPuck(bttn) == client.playerTurn && hasButtonBeenPicked == false)
+            {
+                // TODO: 
+                //       
+                //      
+                //       
+                //       6. is it next to someone
+                //       7. if not, choose an area to move | if yes, player must jump opponents puck (if this applies to more than one player can decide which to jump)
+
+                selectedButton = bttn;
+                hasButtonBeenPicked = true;
+            }
+            else if(CheckForPlayerPuck(bttn) != client.playerTurn && hasButtonBeenPicked == false) // invalid
+            {
+                AddMessageToChatDisplay(console, "Please pick one of your pieces.");
+            }
+
+            if (hasButtonBeenPicked) // valid
+            {
+                if (bttn.isKingged == false)
+                {
+                    if (bttn == boardUI[selectedButton.pos.X - 1, selectedButton.pos.Y])  // invalid
+                    {
+                        AddMessageToChatDisplay(console, "Please pick a valid space.");
+                        hasButtonBeenPicked = false;
+                    }
+                    if (bttn == boardUI[selectedButton.pos.X, selectedButton.pos.Y - 1]) // invalid
+                    {
+                        AddMessageToChatDisplay(console, "Please pick a valid space.");
+                        hasButtonBeenPicked = false;
+                    }
+                    if (bttn == boardUI[selectedButton.pos.X, selectedButton.pos.Y + 1]) // invalid
+                    {
+                        AddMessageToChatDisplay(console, "Please pick a valid space.");
+                        hasButtonBeenPicked = false;
+                    }
+                    if (bttn == boardUI[selectedButton.pos.X + 1, selectedButton.pos.Y - 1]) // invalid
+                    {
+                        AddMessageToChatDisplay(console, "Please pick a valid space.");
+                        hasButtonBeenPicked = false;
+                    }
+                    if (bttn == boardUI[selectedButton.pos.X + 1, selectedButton.pos.Y]) // invalid
+                    {
+                        AddMessageToChatDisplay(console, "Please pick a valid space.");
+                        hasButtonBeenPicked = false;
+                    }
+                    if (bttn == boardUI[selectedButton.pos.X + 1, selectedButton.pos.Y + 1]) // invalid
+                    {
+                        AddMessageToChatDisplay(console, "Please pick a valid space.");
+                        hasButtonBeenPicked = false;
+                    }
+
+                    if (topRightTB == redSpace)
+                    {
+                        if(bttn == boardUI[selectedButton.pos.X - 2, selectedButton.pos.Y + 2])
+                        {
+                            AddMessageToChatDisplay(console, "valid");
+                            hasButtonBeenPicked = false;
+                        }
+                    }
+                    if (topLeftTB == redSpace)
+                    {
+                        if (bttn == boardUI[selectedButton.pos.X - 2, selectedButton.pos.Y - 2])
+                        {
+                            AddMessageToChatDisplay(console, "valid");
+                            hasButtonBeenPicked = false;
+                        }
+                    }
+
+                    if (boardUI[selectedButton.pos.X - 1, selectedButton.pos.Y + 1] == emptySpace)
+                    {
+                        if (bttn == boardUI[selectedButton.pos.X - 1, selectedButton.pos.Y + 1])
+                        {
+                            AddMessageToChatDisplay(console, "valid");
+                            hasButtonBeenPicked = false;
+                        }
+                    }
+                    if (boardUI[selectedButton.pos.X - 1, selectedButton.pos.Y - 1] == emptySpace)
+                    {
+                        if (bttn == boardUI[selectedButton.pos.X - 1, selectedButton.pos.Y - 1])
+                        {
+                            AddMessageToChatDisplay(console, "valid");
+                            hasButtonBeenPicked = false;
+                        }
+                    }
+
+                }
+                if (bttn.isKingged)
+                {
+                    if (bttn == boardUI[selectedButton.pos.X - 1, selectedButton.pos.Y]) // invalid
+                    {
+                        AddMessageToChatDisplay(console, "Please pick a valid space.");
+                        hasButtonBeenPicked = false;
+                    }
+                    if (bttn == boardUI[selectedButton.pos.X, selectedButton.pos.Y - 1]) // invalid
+                    {
+                        AddMessageToChatDisplay(console, "Please pick a valid space.");
+                        hasButtonBeenPicked = false;
+                    }
+                    if (bttn == boardUI[selectedButton.pos.X, selectedButton.pos.Y + 1]) // invalid
+                    {
+                        AddMessageToChatDisplay(console, "Please pick a valid space.");
+                        hasButtonBeenPicked = false;
+                    }
+                    if (bttn == boardUI[selectedButton.pos.X + 1, selectedButton.pos.Y]) // invalid
+                    {
+                        AddMessageToChatDisplay(console, "Please pick a valid space.");
+                        hasButtonBeenPicked = false;
+                    }
+                    if (bttn == boardUI[selectedButton.pos.X + 1, selectedButton.pos.Y - 1]) // valid
+                    {
+                        print("valid");
+                        hasButtonBeenPicked = false;
+                    }
+                    if (bttn == boardUI[selectedButton.pos.X + 1, selectedButton.pos.Y + 1]) // valid
+                    {
+                        print("valid");
+                        hasButtonBeenPicked = false;
+                    }
+                    if (bttn == boardUI[selectedButton.pos.X - 1, selectedButton.pos.Y + 1]) // valid
+                    {
+                        print("valid");
+                        hasButtonBeenPicked = false;
+                    }
+                    if (bttn == boardUI[selectedButton.pos.X - 1, selectedButton.pos.Y - 1]) // valid
+                    {
+                        print("valid");
+                        hasButtonBeenPicked = false;
+                    }
+                }
+            }
+                
+            
+            
+
+        }
+        if(client.playerTurn == 2)
+        {
+
+        }
+              
+    }
+
+    public bool HasButtonBeenPressed(bool pb)
+    {
+        bool pressedBttn = pb;
+
+        if (pressedBttn)
+        {
+            return pb;
+        }
+
+        return pb;
+    }
+
+    public bool IsButtonKingged(bool pb)
+    {
+
+    }
 
 
+
+    public void SetSelected(Button button)
+    {
+        ColorBlock cb = button.colors;
+        cb.normalColor = Color.white;
+        cb.highlightedColor = Color.yellow;
+        cb.selectedColor = Color.yellow;
+        button.colors = cb;
+    }
+
+    public void NextPlayTileColor(Button button)
+    {
+        ColorBlock cb = button.colors;
+        cb.normalColor = Color.cyan;
+        cb.highlightedColor = Color.cyan;
+        button.colors = cb;
+    }
+
+    public void SetUnSelected(Button button)
+    {
+        ColorBlock cb = button.colors;
+        cb.normalColor = Color.white;
+        cb.selectedColor = Color.white;
+        cb.highlightedColor = Color.white;
+        button.colors = cb;
+    }
+
+    int CheckForPlayerPuck(ButtonXO bttn)
+    {
+        int isPlayerPuckHere = 0;
+
+        if(boardUI[bttn.pos.X, bttn.pos.Y].image.sprite == emptySpace)
+        {
+            
+            return isPlayerPuckHere = 0;
+        }
+        if (boardUI[bttn.pos.X, bttn.pos.Y].image.sprite == blackSpace)
+        {
+            
+            return isPlayerPuckHere = 1;
+        }
+        if (boardUI[bttn.pos.X, bttn.pos.Y].image.sprite == redSpace)
+        {
+            
+            return isPlayerPuckHere = 2;
+        }
+
+        return isPlayerPuckHere;
     }
 
     public void UpdateFromServer(byte gameStatus, byte whoseTurn, byte[] spaces)

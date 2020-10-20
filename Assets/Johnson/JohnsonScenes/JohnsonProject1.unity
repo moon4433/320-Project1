@@ -3137,11 +3137,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bttnPrefab: {fileID: 4377870635480580529, guid: e61e25b68a8f98549af6e3906212d5be, type: 3}
+  emptySpace: {fileID: 21300000, guid: 1c37d7613ccdc4a49bb81adc0f2c81ac, type: 3}
+  blackSpace: {fileID: 21300000, guid: d4599346a69a9d94b9d2add2f627af51, type: 3}
+  redSpace: {fileID: 21300000, guid: b759bfa9e33cda1429cdf6a5120487c8, type: 3}
   chatInput: {fileID: 60034797}
   chatDisplay: {fileID: 372928560}
   scrollRect: {fileID: 1923483467}
   panelGameBoard: {fileID: 1362834468}
   client: {fileID: 2009271285}
+  hasButtonBeenPicked: 0
 --- !u!1 &1333407001
 GameObject:
   m_ObjectHideFlags: 0
@@ -5581,6 +5585,7 @@ MonoBehaviour:
   panelHostDetails: {fileID: 95094204}
   panelUsername: {fileID: 1664285978}
   panelGameplay: {fileID: 1318490545}
+  playerTurn: 0
 --- !u!1 &2013839329
 GameObject:
   m_ObjectHideFlags: 0

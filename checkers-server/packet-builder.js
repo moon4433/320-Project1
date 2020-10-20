@@ -3,12 +3,13 @@
 exports.PacketBuilder = {
 
 	join(responseID, game){
-		const packet = Buffer.alloc(69);
+		const packet = Buffer.alloc(70);
 
 		packet.write("JOIN", 0);
 		packet.writeUInt8(responseID, 4);
+		packet.writeUInt8(game.whoseTurn, 5);
 
-		let offset = 5;
+		let offset = 6;
 		for(let y = 0; y < game.board.length; y++){
 			for(let x = 0; x < game.board[y].length; x++){
 

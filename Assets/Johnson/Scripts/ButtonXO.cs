@@ -31,19 +31,22 @@ public class ButtonXO : MonoBehaviour
 
     private Button bttn;
     public Image image;
+
+    [HideInInspector]
+    public bool isKingged = false;
     
     public void Init(GridPOS pos, UnityAction callback)
     {
         this.pos = pos;
 
         bttn = GetComponent<Button>();
-
         bttn.onClick.AddListener( callback );
     }
 
+    
+
     public void SetOwner(byte b)
     {
-
         if (b == 0) image.sprite = emptySpace;
         if (b == 1) image.sprite = blackSpace;
         if (b == 2) image.sprite = redSpace;

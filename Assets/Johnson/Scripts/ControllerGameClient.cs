@@ -32,6 +32,9 @@ public class ControllerGameClient : MonoBehaviour
     public Transform panelHostDetails;
     public Transform panelUsername;
     public ControllerGameplay panelGameplay;
+    
+    [HideInInspector]
+    public int playerTurn = 0;
 
 
     // Start is called before the first frame update
@@ -166,20 +169,21 @@ public class ControllerGameClient : MonoBehaviour
     {
         if (buffer.Length < 4) return; // not enough data in buffer
 
-        print(buffer.ReadString(0, buffer.Length).ToString());
+        //print(buffer.ReadString(0, buffer.Length).ToString());
         //print(buffer.ReadString(0, 4).ToString());
 
         string packetIdentifier = buffer.ReadString(0, 4);
 
         switch(packetIdentifier){
             case "JOIN":
-                if (buffer.Length < 69) return; // not enough data for a JOIN packet
+                if (buffer.Length < 70) return; // not enough data for a JOIN packet
                 byte joinResponse = buffer.ReadUInt8(4);
-
+                byte currentPlayerTurn = buffer.ReadUInt8(5);
+                playerTurn = currentPlayerTurn;
                 byte[] currentSpaces = new byte[64];
                 for (int i = 0; i < 64; i++)
                 {
-                    currentSpaces[i] = buffer.ReadUInt8(5 + i);
+                    currentSpaces[i] = buffer.ReadUInt8(6 + i);
                 }
 
                 if (joinResponse == 1 || joinResponse == 2 || joinResponse == 3)
@@ -237,7 +241,7 @@ public class ControllerGameClient : MonoBehaviour
 
                 panelGameplay.SetTheBoard(currentSpaces);
 
-                buffer.Consume(69);
+                buffer.Consume(70);
                 
                 break;
             case "CHAT":
@@ -271,6 +275,7 @@ public class ControllerGameClient : MonoBehaviour
                 SwitchToPanel(Panel.Gameplay);
 
                 byte whoseTurn = buffer.ReadUInt8(4);
+                playerTurn = whoseTurn;
                 byte gameStatus = buffer.ReadUInt8(5);
                 /*if(gameStatus != 0)
                 {
