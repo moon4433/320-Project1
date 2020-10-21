@@ -28,6 +28,17 @@ public static class PacketBuilder
         return packet;
     }
 
+    public static Buffer MVCH(int x, int y, int isKinged)
+    {
+        Buffer packet = Buffer.Alloc(7);
+        packet.WriteString("MVCH");
+        packet.WriteUInt8((byte)x, 4);
+        packet.WriteUInt8((byte)y, 5);
+        packet.WriteUInt8((byte)isKinged, 6);
+
+        return packet;
+    }
+
     public static Buffer Play(int x, int y)
     {
         Buffer packet = Buffer.Alloc(6);

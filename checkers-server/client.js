@@ -71,6 +71,20 @@ exports.Client = class Client {
 				console.log(this.username + ": " + message);
 				this.server.broadcastPacket(PacketBuilder.chat(this.username, message));
 				break;
+
+			case "MVCH":
+
+				if(this.buffer.length < 7) return;
+
+				const tx = this.buffer.readUInt8(4);
+				const ty = this.buffer.readUInt8(5);
+
+				const isKinged = this.buffer.readUInt8(6);
+				this.buffer = this.buffer.slice(7);
+				this.server.game.checkMove(this, tx, ty, isKinged);
+
+				break;
+
 			case "PLAY": 
 				if(this.buffer.length < 6) return; // not enough data in buffer....
 				const x = this.buffer.readUInt8(4);

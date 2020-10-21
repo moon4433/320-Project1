@@ -33,7 +33,7 @@ public class ButtonXO : MonoBehaviour
     public Image image;
 
     [HideInInspector]
-    public bool isKingged = false;
+    public int isKingged = 0;
     
     public void Init(GridPOS pos, UnityAction callback)
     {

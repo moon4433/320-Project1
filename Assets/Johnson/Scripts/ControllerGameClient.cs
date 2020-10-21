@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using TMPro;
 using System;
 using System.Text.RegularExpressions;
+using System.Runtime.CompilerServices;
 
 public enum Panel
 {
@@ -169,7 +170,7 @@ public class ControllerGameClient : MonoBehaviour
     {
         if (buffer.Length < 4) return; // not enough data in buffer
 
-        //print(buffer.ReadString(0, buffer.Length).ToString());
+        print(buffer.ReadString(0, buffer.Length).ToString());
         //print(buffer.ReadString(0, 4).ToString());
 
         string packetIdentifier = buffer.ReadString(0, 4);
@@ -244,6 +245,23 @@ public class ControllerGameClient : MonoBehaviour
                 buffer.Consume(70);
                 
                 break;
+            case "NVLD":
+
+                ushort notValidMsgLenght = buffer.ReadUInt16BE(4);
+                int pL = 5 + notValidMsgLenght;
+
+                if (buffer.Length < pL) return;
+
+                string nVM = buffer.ReadString(6, notValidMsgLenght);
+
+                print("Console: " + nVM);
+
+                panelGameplay.AddMessageToChatDisplay("Console: " , nVM);
+
+                buffer.Consume(pL);
+
+                break;
+
             case "CHAT":
 
 
@@ -322,6 +340,11 @@ public class ControllerGameClient : MonoBehaviour
         await socket.GetStream().WriteAsync(packet.bytes, 0, packet.bytes.Length);
 
 
+    }
+
+    public void SendMoveCheck(int x, int y, int isKinged)
+    {
+        SendPacketToServer(PacketBuilder.MVCH(x, y, isKinged));
     }
 
     public void SendChatPacket(string msg)

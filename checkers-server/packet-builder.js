@@ -50,5 +50,13 @@ exports.PacketBuilder = {
 
 		return packet;
 	},
+	notValid(){
+		const msg = "Not a Valid move.";
+		const packet = Buffer.alloc(5 + msg.length);
+		packet.write("NVLD", 0);
+		packet.writeUInt16BE(msg.length, 4);
+		packet.write(msg, 6);
+		return packet;
+	},
 
 };
