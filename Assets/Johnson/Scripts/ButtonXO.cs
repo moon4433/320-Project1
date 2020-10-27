@@ -40,6 +40,7 @@ public class ButtonXO : MonoBehaviour
         this.pos = pos;
 
         bttn = GetComponent<Button>();
+        isKingged = 1;
         bttn.onClick.AddListener( callback );
     }
 
