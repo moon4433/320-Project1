@@ -58,5 +58,20 @@ exports.PacketBuilder = {
 		packet.write(msg, 6);
 		return packet;
 	},
+	validMoves(tlX, tlY, trX, trY, blX, blY, brX, brY){
+
+		const packet = Buffer.alloc(12);
+		packet.write("VDMV", 0);
+		packet.writeUInt8(tlY,4);
+		packet.writeUInt8(tlX,5);
+		packet.writeUInt8(trY,6);
+		packet.writeUInt8(trX,7);
+		packet.writeUInt8(blY,8);
+		packet.writeUInt8(blX,9);
+		packet.writeUInt8(brY,10);
+		packet.writeUInt8(brX,11);
+		return packet;
+
+	},
 
 };

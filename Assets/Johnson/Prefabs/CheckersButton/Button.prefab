@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -212,3 +212,4 @@ MonoBehaviour:
   blackSpace: {fileID: 21300000, guid: d4599346a69a9d94b9d2add2f627af51, type: 3}
   redSpace: {fileID: 21300000, guid: b759bfa9e33cda1429cdf6a5120487c8, type: 3}
   image: {fileID: 3179255851015238926}
+  isKingged: 0

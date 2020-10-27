@@ -262,6 +262,25 @@ public class ControllerGameClient : MonoBehaviour
 
                 break;
 
+            case "VDMV":
+
+                if (buffer.Length < 12) return; // not enough data for a VDMV packet
+
+                byte tlY = buffer.ReadUInt8(4);
+                byte tlX = buffer.ReadUInt8(5);
+                byte trY = buffer.ReadUInt8(6);
+                byte trX = buffer.ReadUInt8(7);
+                byte blY = buffer.ReadUInt8(8);
+                byte blX = buffer.ReadUInt8(9);
+                byte brY = buffer.ReadUInt8(10);
+                byte brX = buffer.ReadUInt8(11);
+
+                panelGameplay.ShowValidMoves(tlY, tlX, trY, trX, blY, blX, brY, brX);
+
+                buffer.Consume(12);
+
+                break;
+
             case "CHAT":
 
 

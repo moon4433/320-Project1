@@ -69,6 +69,30 @@ CHAT - When recieving a CHAT packet from a client, the server sends this CHAT pa
 	7 	? 	ascii 		sender's username
 	? 	? 	ascii 		chat message
 
+NVLD - When Recieving a CHMV (Check Move) packet from a client, the server sends this NVLD (not valid) packet out to player if the move isn't a valid one
+
+	O 	L 	DataType 	Desc
+	------------------------------------------
+	0 	4 	ascii 		packet type: "NVLD"
+	4 	2 	uint16 		length of the Console message
+	6	? 	ascii 		length of the chat message
+
+VDMV - When Recievieng a CHMV (Check Move) packet from a client, the server sends this VDMV (valid move) packet out to player with the valid move that can be played
+
+	O 	L 	DataType 	Desc
+	------------------------------------------
+	0 	4 	ascii 		packet type: "VDMV"
+	4 	1 	uint8 		top left y
+	5	1 	uint8 		top left x
+	6	1 	uint8 		top right y
+	7	1 	uint8 		top right x
+	8	1 	uint8 		bottom left y
+	9	1 	uint8 		bottom left x
+	10	1 	uint8 		bottom right y
+	11	1 	uint8 		bottom right x
+
+
+
 Packets from Client
 ---------------------
 
@@ -101,3 +125,12 @@ PLAY - this packet should be submitted when the player takes their turn.
 	0 	4 	ascii 		packet type: "PLAY"
 	4 	1 	uint8 		X (column number)
 	5 	1 	uint8 		Y (row number)
+
+MVCH - Player picks a place to be checked for valid moves
+
+	O 	L 	DataType 	Desc
+	-----------------------------------------
+	0 	4 	ascii 		packet type: "MVCH"
+	4 	1 	uint8 		X (column number)
+	5 	1 	uint8 		Y (row number)
+	6	1	uint8		isKinged (represented by a number rather than a bool)

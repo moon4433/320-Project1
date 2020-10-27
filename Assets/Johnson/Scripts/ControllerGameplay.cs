@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public enum Player
@@ -47,6 +49,8 @@ public class ControllerGameplay : MonoBehaviour
     [HideInInspector]
     public bool hasButtonBeenPicked;
 
+    public UnityAction callback;
+
 
     // Start is called before the first frame update
     void Start()
@@ -77,37 +81,22 @@ public class ControllerGameplay : MonoBehaviour
 
     void ButtonClicked(ButtonXO bttn)
     {
-        //ControllerGameClient.singleton.SendPlayPacket(bttn.pos.X, bttn.pos.Y);
-        ControllerGameClient.singleton.SendMoveCheck(bttn.pos.X, bttn.pos.Y, bttn.isKingged);
+        if (!hasButtonBeenPicked)
+        {
+            //ControllerGameClient.singleton.SendPlayPacket(bttn.pos.X, bttn.pos.Y);
+            ControllerGameClient.singleton.SendMoveCheck(bttn.pos.X, bttn.pos.Y, bttn.isKingged);
+            previousBttn = boardUI[bttn.pos.X, bttn.pos.Y];
+            SetSelected(boardUI[bttn.pos.X, bttn.pos.Y].GetComponent<Button>());
+            hasButtonBeenPicked = true;
+        }
+        else
+        {
+            
+        }
+            
+
     }
 
-
-
-    public void SetSelected(Button button)
-    {
-        ColorBlock cb = button.colors;
-        cb.normalColor = Color.white;
-        cb.highlightedColor = Color.yellow;
-        cb.selectedColor = Color.yellow;
-        button.colors = cb;
-    }
-
-    public void NextPlayTileColor(Button button)
-    {
-        ColorBlock cb = button.colors;
-        cb.normalColor = Color.cyan;
-        cb.highlightedColor = Color.cyan;
-        button.colors = cb;
-    }
-
-    public void SetUnSelected(Button button)
-    {
-        ColorBlock cb = button.colors;
-        cb.normalColor = Color.white;
-        cb.selectedColor = Color.white;
-        cb.highlightedColor = Color.white;
-        button.colors = cb;
-    }
 
     int CheckForPlayerPuck(ButtonXO bttn)
     {
@@ -130,6 +119,53 @@ public class ControllerGameplay : MonoBehaviour
         }
 
         return isPlayerPuckHere;
+    }
+
+    public void ShowValidMoves(byte tlY, byte tlX, byte trY, byte trX, byte blY, byte blX, byte brY, byte brX)
+    {
+        hasButtonBeenPicked = true;
+
+        if (tlY == 0)
+        {
+            tlY -= 1;
+        }
+        if (tlX == 0)
+        {
+            tlX -= 1;
+        }
+        if (trY == 0)
+        {
+            trY -= 1;
+        }
+        if (trX == 0)
+        {
+            trX -= 1;
+        }
+        if (blY == 0)
+        {
+            blY -= 1;
+        }
+        if (blX == 0)
+        {
+            blX -= 1;
+        }
+        if (brY == 0)
+        {
+            brY -= 1;
+        }
+        if (brX == 0)
+        {
+            brX -= 1;
+        }
+
+        
+        NextPlayTileColor(boardUI[tlX, tlY].GetComponent<Button>());
+        NextPlayTileColor(boardUI[trX, trY].GetComponent<Button>());
+        NextPlayTileColor(boardUI[blX, blY].GetComponent<Button>());
+        NextPlayTileColor(boardUI[brX, brY].GetComponent<Button>());
+
+        print("tlX: " + (tlX) + " tlY: " + (tlY) + " tlrX: " + (trX) + " trY: " + (trY) + " blX: " + (blX) + " blY: " + (blY) + " brX: " + (brX) + " brY: " + (brY));
+
     }
 
     public void UpdateFromServer(byte gameStatus, byte whoseTurn, byte[] spaces)
@@ -194,5 +230,31 @@ public class ControllerGameplay : MonoBehaviour
     public void AddMessageToUserDisplay(string users)
     {
         chatDisplay.text += ($"{users}\n");
+    }
+
+    public void SetSelected(Button button)
+    {
+        ColorBlock cb = button.colors;
+        cb.normalColor = Color.yellow;
+        cb.highlightedColor = Color.yellow;
+        cb.selectedColor = Color.yellow;
+        button.colors = cb;
+    }
+
+    public void NextPlayTileColor(Button button)
+    {
+        ColorBlock cb = button.colors;
+        cb.normalColor = Color.cyan;
+        cb.highlightedColor = Color.cyan;
+        button.colors = cb;
+    }
+
+    public void SetUnSelected(Button button)
+    {
+        ColorBlock cb = button.colors;
+        cb.normalColor = Color.white;
+        cb.selectedColor = Color.white;
+        cb.highlightedColor = Color.white;
+        button.colors = cb;
     }
 }
