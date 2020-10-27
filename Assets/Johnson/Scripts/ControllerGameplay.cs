@@ -81,17 +81,27 @@ public class ControllerGameplay : MonoBehaviour
 
     void ButtonClicked(ButtonXO bttn)
     {
+        ButtonXO tl = boardUI[bttn.pos.X - 1, bttn.pos.Y - 1];
+        ButtonXO tr = boardUI[bttn.pos.X - 1, bttn.pos.Y + 1];
+        ButtonXO bl = boardUI[bttn.pos.X + 1, bttn.pos.Y - 1];
+        ButtonXO br = boardUI[bttn.pos.X + 1, bttn.pos.Y + 1];
+
         if (!hasButtonBeenPicked)
         {
             //ControllerGameClient.singleton.SendPlayPacket(bttn.pos.X, bttn.pos.Y);
             ControllerGameClient.singleton.SendMoveCheck(bttn.pos.X, bttn.pos.Y, bttn.isKingged);
             previousBttn = boardUI[bttn.pos.X, bttn.pos.Y];
-            SetSelected(boardUI[bttn.pos.X, bttn.pos.Y].GetComponent<Button>());
+            SetSelected(previousBttn.GetComponent<Button>());
             hasButtonBeenPicked = true;
         }
         else
         {
-            
+            SetUnSelected(tl.GetComponent<Button>());
+            SetUnSelected(tr.GetComponent<Button>());
+            SetUnSelected(bl.GetComponent<Button>());
+            SetUnSelected(br.GetComponent<Button>());
+            SetUnSelected(previousBttn.GetComponent<Button>());
+            hasButtonBeenPicked = true;
         }
             
 
@@ -246,6 +256,7 @@ public class ControllerGameplay : MonoBehaviour
         ColorBlock cb = button.colors;
         cb.normalColor = Color.cyan;
         cb.highlightedColor = Color.cyan;
+        cb.selectedColor = Color.cyan;
         button.colors = cb;
     }
 
